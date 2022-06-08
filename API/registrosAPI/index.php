@@ -1,5 +1,7 @@
 <?php
 
+use Slim\Http\Request;
+
 require_once('vendor/autoload.php');
 
 $app = new \Slim\app();
@@ -33,14 +35,14 @@ $app->get('/registros', function($request, $response, $args)
     }
 });
 
-/*
 // Endpoint para listar apenas um registro
-$app -> get('/registros/{id}', function($request, $response, $args)
+$app->get('/registros/{id}', function($request, $response, $args)
 {
     $id = $args['id'];
 
     require_once('../modulo/config.php');
     require_once('../controller/registrosController.php');
+ 
 
     if ($dados = buscarRegistro($id))
     {
@@ -68,7 +70,7 @@ $app -> get('/registros/{id}', function($request, $response, $args)
                                 -> write('{"message" : "Item não encontrado"}');
         }
 });
-*/
+
 // Endpoint para inserir um registro
 $app -> post('/registros', function($request, $response, $args)
 {
@@ -127,7 +129,7 @@ $app -> post('/registros', function($request, $response, $args)
 
     }
 });
-/*
+
 // Endpoint para deletar registro
 $app -> delete('/registros/{id}', function($request, $response, $args)
 {
@@ -159,7 +161,81 @@ $app -> delete('/registros/{id}', function($request, $response, $args)
         }
     }
 });
-*/
+
+$app->post('/registros/{id}', function ($request, $response, $args){
+
+    if (is_numeric($args['id']))
+    {
+        $id = $args['id'];
+
+        $contentTypeHeader = $request->getHeaderLine('Content-Type');
+
+        $contentType = explode(";", $contentTypeHeader);
+
+        switch ($contentType[0]){
+
+            case 'multipart/form-data':
+                
+                require_once('../modulo/config.php');
+                require_once('../controller/registrosController.php');
+
+                if ($dadosRegistro = buscarRegistro($id))
+                {
+                    $dadosBody = $request->getParsedBody(); 
+
+                    $arrayDados = array(
+                        $dadosBody,
+                        "id" => $id
+                    );
+
+                    $resposta = atualizarRegistro($arrayDados);
+
+                    if (is_bool($resposta) && $resposta == true)
+                    {
+                        return $response->withStatus(201)
+                                        ->withHeader('Content-Type', 'application/json')
+                                        ->write('{"message": "Registro atualizado com sucesso"}');
+
+                    } elseif (is_array($resposta) && $resposta['idErro'])
+                    {
+                        $dadosJSON = createJSON($resposta);
+                        return $response->withStatus(404)
+                                        ->withHeader('Content-Type', 'application/json')
+                                        ->write('{"message": "Houve um problema no processo de atualização",
+                                                    "Erro": ' . $dadosJSON . '} ');
+                    }
+
+                } else 
+                {
+                    return $response->withStatus(404)
+                                    ->withHeader('Content-Type', 'application/json')
+                                    ->write('{"message": "O ID informado não existe na base de dados."} ');
+                }
+            break;
+
+            case 'application/json':
+                $dadosBody = $request->getParsedBody();
+
+                return $response->withStatus(200)
+                                ->withHeader('Content-Type', 'application/json')
+                                ->write('{"message": "Formato selecionado foi JSON"}');
+        
+                break;
+        
+              default:
+                return $response->withStatus(400)
+                                ->withHeader('Content-Type', 'application/json')
+                                ->write('{"message":  "Formato do Content-Type não é válido para esta requisição"}');
+                break;
+        }
+    } else 
+    {
+        return $response->withStatus(404)
+                        ->withHeader('Content-Type', 'application/json')
+                        ->writewrite('{"message": "É obrigatório informar um ID com formato válido (número)"}');
+    }
+});
+
 $app->run();
 
 ?>

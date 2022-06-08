@@ -78,13 +78,18 @@
 
     function updateRegistro($dadosRegistro)
     {
+        
+        var_dump($dadosRegistro);
+        die;
+
         $conexao = conexaoMySql();
 
-        $sql = "update registros set
-                        nome_cliente = '". $dadosRegistro['nome'] ."',
-                        placa_veiculo = '". $dadosRegistro['placa'] ."',
-                        modelo_veiculo = '". $dadosRegistro['veiculo'] ."',
-                        nome_cliente = '". $dadosRegistro['entrada'] ."'
+        $sql = "update registro set
+                        nome_cliente = '". $dadosRegistro['nome_cliente'] ."',
+                        placa_veiculo = '". $dadosRegistro['placa_veiculo'] ."',
+                        modelo_veiculo = '". $dadosRegistro['modelo_veiculo'] ."',
+                        entrada = '". $dadosRegistro['entrada'] ."',
+                        saida = '". $dadosRegistro['saida']."'
                     where id =" .$dadosRegistro['id'];
 
         if (mysqli_query($conexao, $sql))
@@ -96,14 +101,16 @@
         } else 
         {
             fecharConexaoMySql($conexao);
-        }            
+        }
+        
+        return $statusResposta;
     }
 
     function deleteRegistro($id)
     {
         $conexao = conexaoMySql();
 
-        $sql = "delete from registros where id = " .$id;
+        $sql = "delete from registro where id = " .$id;
 
         if (mysqli_query($conexao, $sql))
         {
@@ -122,7 +129,7 @@
     {
         $conexao = conexaoMySql();
 
-        $sql = "select * from registros where id = " .$id;
+        $sql = "select * from registro where id = " .$id;
 
         $result = mysqli_query($conexao, $sql);
 
@@ -132,9 +139,9 @@
             {
                 $arrayDados = array(
                     "id"                => $rsDados['id'],
-                    "nome_cliente"      => $rsDados['nome'],
-                    "placa_veiculo"     => $rsDados['placa'],
-                    "modelo_veiculo"    => $rsDados['modelo'],
+                    "nome_cliente"      => $rsDados['nome_cliente'],
+                    "placa_veiculo"     => $rsDados['placa_veiculo'],
+                    "modelo_veiculo"    => $rsDados['modelo_veiculo'],
                     "entrada"           => $rsDados['entrada'],
                     "saida"             => $rsDados['saida'],
 

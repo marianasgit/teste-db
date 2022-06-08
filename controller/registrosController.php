@@ -68,22 +68,25 @@
         }
     }
 
-    function atualizarRegistro($dadosRegistro, $arrayDados)
+    function atualizarRegistro($dadosRegistro)
     {
-        $id = $arrayDados['id'];
+        $id = $dadosRegistro['id'];
 
         if (!empty($dadosRegistro))
         {
-            if (!empty($dadosRegistro['nome']) && !empty($dadosRegistro['veiculo']) && !empty($dadosRegistro['placa']))
+            if (!empty($dadosRegistro['nome_cliente']) && !empty($dadosRegistro['placa_veiculo']) && !empty($dadosRegistro['modelo_veiculo']))
             {
                 if (is_numeric($id) && $id != 0 )
                 {
                     $arrayDados = array (
                         "id"        => $id,
-                        "nome"      => $dadosRegistro['nome'],
-                        "veiculo"   => $dadosRegistro['veiculo'],
-                        "placa"     => $dadosRegistro['placa']
+                        "nome_cliente"    => $dadosRegistro['nome_cliente'],
+                        "placa_veiculo"   => $dadosRegistro['placa_veiculo'],
+                        "modelo_veiculo"  => $dadosRegistro['modelo_veiculo'],
+                        "entrada"         => $dadosRegistro['entrada'],
+                        "saida"           => $dadosRegistro['saida'],    
                     );
+
 
                     require_once(SRC.'model/bd/registros.php');
 
