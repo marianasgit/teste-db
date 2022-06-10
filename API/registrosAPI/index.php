@@ -72,7 +72,7 @@ $app->get('/registros/{id}', function($request, $response, $args)
 });
 
 // Endpoint para inserir um registro
-$app -> post('/registros', function($request, $response, $args)
+$app->post('/registros', function($request, $response, $args)
 {
     $contentTypeHeader = $request -> getHeaderLine('Content-Type');
 
@@ -131,7 +131,7 @@ $app -> post('/registros', function($request, $response, $args)
 });
 
 // Endpoint para deletar registro
-$app -> delete('/registros/{id}', function($request, $response, $args)
+$app->delete('/registros/{id}', function($request, $response, $args)
 {
     if (is_numeric($args['id']))
     {
@@ -211,7 +211,7 @@ $app->post('/registros/{id}', function ($request, $response, $args){
                                     ->withHeader('Content-Type', 'application/json')
                                     ->write('{"message": "O ID informado não existe na base de dados."} ');
                 }
-            break;
+                break;
 
             case 'application/json':
                 $dadosBody = $request->getParsedBody();
@@ -234,6 +234,41 @@ $app->post('/registros/{id}', function ($request, $response, $args){
                         ->withHeader('Content-Type', 'application/json')
                         ->writewrite('{"message": "É obrigatório informar um ID com formato válido (número)"}');
     }
+});
+
+$app->get('/registros/placa/{placa_veiculo}', function ($request, $response, $args)
+{
+    
+    $placa_veiculo = $args['placa_veiculo'];
+
+    require_once('../modulo/config.php');
+    require_once('../controller/registrosController.php');
+
+    if ($dados = buscarPlaca($placa_veiculo))
+    {
+        if (!isset($dados['idErro']))
+        {
+            if ($dadosJSON = createJSON($dados))
+            {
+                return $response    -> withStatus(200)
+                                    -> withHeader('Content-Type', 'application/json')
+                                    -> write($dadosJSON);
+            }
+        } else
+        {
+            $dadosJSON = createJSON($dados);
+            
+            return $response    -> withStatus(404) 
+                                -> withHeader('Content-Type', 'application/json')
+                                -> write('{"message" : "Dados Inválidos", "Erro" : '.$dadosJSON.'}');
+
+        } 
+    } else
+        {
+            return $response    -> withStatus(404)
+                                -> withHeader('Content-Type', 'application/json')
+                                -> write('{"message" : "Item não encontrado"}');
+        }    
 });
 
 $app->run();

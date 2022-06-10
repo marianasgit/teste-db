@@ -68,6 +68,29 @@
         }
     }
 
+    function buscarPlaca($placa_veiculo)
+    {
+        
+        if (!empty($placa_veiculo))
+        {
+            require_once(SRC.'model/bd/registros.php');
+
+            $dados = selectByPlaca($placa_veiculo);
+
+            if (!empty($dados))
+            {
+                return $dados;
+            } else 
+            {
+                return false;
+            }
+        } else 
+        {
+            return array ('idErro' => 4, 'message' => 'Não é possível buscar um registro sem informar um Id válido');
+        }
+        
+    }
+
     function atualizarRegistro($dadosRegistro)
     {
         $id = $dadosRegistro['id'];

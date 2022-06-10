@@ -143,7 +143,89 @@
                     "placa_veiculo"     => $rsDados['placa_veiculo'],
                     "modelo_veiculo"    => $rsDados['modelo_veiculo'],
                     "entrada"           => $rsDados['entrada'],
-                    "saida"             => $rsDados['saida'],
+                    "saida"             => $rsDados['saida']
+
+                );
+            }
+        }
+
+        fecharConexaoMySql($conexao);
+
+        if(isset($arrayDados))
+        {
+            return $arrayDados;
+        } else 
+        {
+            return false;
+        }
+    }
+
+    function selectByPlaca($placa_veiculo)
+    {
+        
+        $conexao = conexaoMySql();
+
+        $sql = "select hour(timediff(saida, entrada)) as tempoTotal from registro where placa_veiculo = '".$placa_veiculo."' ";
+                
+        $teste3 = mysqli_query($conexao, $sql);
+
+        if ($teste3)
+        {
+            if ($rsDados = mysqli_fetch_assoc($teste3))
+            {
+                $tempoTotal = $rsDados['tempoTotal'];
+            }
+        }
+        
+        $teste =  mysqli_query($conexao, "select valor_primeira_hora from estacionamento where id = 1;");
+
+        if ($teste)
+        {
+            if ($rsDados = mysqli_fetch_assoc($teste))
+            {
+                $valorPrimeiraHora = $rsDados['valor_primeira_hora'];
+            }
+        }
+
+        
+        $teste2 = mysqli_query($conexao, "select valor_demais_horas from estacionamento where id = 1;");
+        
+        if ($teste2)
+        {
+            if ($rsDados = mysqli_fetch_assoc($teste2))
+            {
+                $valorDemaisHoras = $rsDados['valor_demais_horas'];
+            }
+        }
+        
+        $valorTotal = (int) 0;   
+
+        if ($tempoTotal <= 1)
+        {
+            $valorTotal = intval($tempoTotal) * intval($valorPrimeiraHora); 
+            
+        } else 
+        {
+            $valorTotal = intval($tempoTotal - 1) * (intval($valorDemaisHoras) + intval($valorPrimeiraHora));
+           
+        }
+        
+
+        $sql = "select * from registro where placa_veiculo = '".$placa_veiculo."' ;";
+
+        $result = mysqli_query($conexao, $sql);
+
+        if ($result)
+        {
+            if ($rsDados = mysqli_fetch_assoc($result))
+            {
+                $arrayDados = array(
+                    "id"                => $rsDados['id'],
+                    "nome_cliente"      => $rsDados['nome_cliente'],
+                    "placa_veiculo"     => $rsDados['placa_veiculo'],
+                    "modelo_veiculo"    => $rsDados['modelo_veiculo'],
+                    $tempoTotal,
+                    $valorTotal
 
                 );
             }
