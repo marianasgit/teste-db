@@ -152,3 +152,17 @@
             return array( 'idErro' => 3, 'message' => 'Não é possível excluir um registro sem informar um Id válido');
         }
     }
+
+    function listarRelatorioDiario()
+    {
+        require_once(SRC.'model/bd/registros.php');
+
+        $dados = selectRelatorioDiario();
+
+        if (!empty($dados))
+        {
+            return $dados;
+        } else {
+            return false;
+        }
+    }

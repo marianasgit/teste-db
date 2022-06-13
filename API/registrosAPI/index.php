@@ -29,9 +29,6 @@ $app->get('/registros', function($request, $response, $args)
         return $response    -> withStatus(404)
                             -> withHeader('Content-Type', 'application/json')
                             -> write('{"message" : "Item não encontrado"}');
-
-                            
-        
     }
 });
 
@@ -269,6 +266,30 @@ $app->get('/registros/placa/{placa_veiculo}', function ($request, $response, $ar
                                 -> withHeader('Content-Type', 'application/json')
                                 -> write('{"message" : "Item não encontrado"}');
         }    
+});
+
+$app->get('/registros/relatoriodiario', function($request, $response, $args)
+{
+    require_once('../modulo/config.php');
+    require_once('../controller/registrosController.php');
+
+    if ($dados = listarRelatorioDiario())
+    {
+        if ($dadosJSON = createJSON($dados))
+        {
+            return $response    -> withStatus(200)
+                                -> withHeader('Content-Type', 'application/json')
+                                -> write($dadosJSON);
+        }
+        
+    } else
+    {
+        var_dump($dados);
+        die; 
+        return $response    -> withStatus(404)
+                            -> withHeader('Content-Type', 'application/json')
+                            -> write('{"message" : "Item não encontrado"}');
+    }
 });
 
 $app->run();

@@ -241,4 +241,26 @@
             return false;
         }
     }
+
+    function selectRelatorioDiario()
+    {
+        $conexao = conexaoMySql();
+
+        $sql = "(select sum(valor_total) as valor_total from registro where saida = sysdate()";
+
+        $result = mysqli_query($conexao, $sql);
+
+        if ($result)
+        {
+            $cont = 0;
+
+            while ($rsDados = mysqli_fetch_assoc($result))
+            {
+                $arrayDados[$cont] = array(
+                    "valor_total"
+                );
+            }
+        }
+    }
+
 ?>
